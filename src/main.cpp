@@ -1,5 +1,5 @@
 // melon pinball: a table on the melon planet, in the spirit of the old Windows pinball.
-//   melon-pinball [--fullscreen] [--golden] [--screenshot FILE [--seconds N] [--play]]
+//   melon-pinball [--fullscreen] [--screenshot FILE [--seconds N] [--play]]
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
@@ -431,7 +431,7 @@ int main(int argc, char **argv) {
     else if (!std::strcmp(argv[i], "--fullscreen")) fullscreenArg = true;
     else if (!std::strcmp(argv[i], "--version")) { std::printf("melon-pinball %s\n", PINBALL_VERSION); return 0; }
     else {
-      std::printf("usage: melon-pinball [--fullscreen] [--golden]\n"
+      std::printf("usage: melon-pinball [--fullscreen]\n"
                   "       melon-pinball --screenshot FILE.png [--seconds N] [--play [--harvest]] [--shop] [--packs]\n"
                   "                     [--collection]   (render one frame and exit)\n");
       return std::strcmp(argv[i], "--help") ? 1 : 0;
@@ -477,8 +477,10 @@ int main(int argc, char **argv) {
   }
   SDL_RenderPresent(app.ren);
 
-  bool golden = forceGold || (!noGold && fileExists("/etc/melon/gauntlet-survivor"));
-  app.game.init(golden);
+  // --golden only changes the look (for screenshots); the survivor's melon and pack need the gauntlet
+  bool survivor = fileExists("/etc/melon/gauntlet-survivor");
+  bool golden = forceGold || (!noGold && survivor);
+  app.game.init(golden, survivor);
   if (!buildArt(app.art, app.game.table, app.text, golden, dataDir) || !app.view.init(app.ren, app.art, app.text)) {
     std::fprintf(stderr, "melon-pinball: could not build the table: %s\n", SDL_GetError());
     return 1;

@@ -34,10 +34,10 @@ static std::string commas(long long v) {
 }
 static double frand() { return (std::rand() % 10000) / 10000.0; }
 
-void Game::init(bool gold) {
+void Game::init(bool gold, bool survivor) {
   golden = gold;
   unlocks.load();
-  unlocks.survivor = gold;
+  unlocks.survivor = survivor;   // only from /etc/melon/gauntlet-survivor, never from --golden
   table.build();
   applyMachine();
   const char *u = std::getenv("USER");

@@ -29,7 +29,7 @@ int main() {
   std::srand(7);
 
   Game g;
-  g.init(false);
+  g.init(false, false);
   g.startRun(PK_CANTALOUPE);
   CHECK(g.mode == MODE_PLAY && g.run.target == 20000 && g.run.ballsLeft == 1 && g.run.seeds == 4,
         "a run starts on season 1's sprout field: target %lld, %d spare ball, %d seeds", g.run.target, g.run.ballsLeft,
@@ -113,7 +113,7 @@ int main() {
   // Magnet Seed: a ball rolling past the magnet is caught and fed into the portal
   {
     Game h;
-    h.init(false);
+    h.init(false, false);
     h.startRun(PK_CANTALOUPE);
     h.run.melons.push_back({ML_MAGNET_SEED});
     h.run.fieldScore = h.run.target;
@@ -128,7 +128,7 @@ int main() {
   // losing: both balls drain short of the target ends the run
   {
     Game h;
-    h.init(false);
+    h.init(false, false);
     h.startRun(PK_CANTALOUPE);
     for (int k = 0; k < 2; k++) {
       clearBalls(h);
@@ -140,7 +140,7 @@ int main() {
   // A-P-K lanes light M-E-L-O-N letters: all three lanes spell three letters
   {
     Game h;
-    h.init(false);
+    h.init(false, false);
     h.newGame();
     clearBalls(h);
     for (double x : {0.200, 0.250, 0.300}) {
@@ -151,6 +151,17 @@ int main() {
     int lit = 0;
     for (int i = LA_M; i <= LA_N; i++) lit += h.lamp[i] > 0.5f;
     CHECK(lit >= 3, "three A-P-K lanes light %d letters of M-E-L-O-N", lit);
+  }
+  // the golden look alone unlocks nothing: the survivor's melon and pack come only from the gauntlet
+  {
+    Game h;
+    h.init(true, false);
+    CHECK(h.golden && !h.unlocks.hasPack(PK_GAUNTLET) && !h.unlocks.hasMelon(ML_SURVIVOR),
+          "the golden look alone gives neither the Gauntlet Pack nor Survivor's Rind");
+    Game s;
+    s.init(false, true);
+    CHECK(s.unlocks.hasPack(PK_GAUNTLET) && s.unlocks.hasMelon(ML_SURVIVOR),
+          "a gauntlet survivor gets the Gauntlet Pack and Survivor's Rind");
   }
   std::printf(fails ? "%d FAILED\n" : "all passed\n", fails);
   return fails ? 1 : 0;

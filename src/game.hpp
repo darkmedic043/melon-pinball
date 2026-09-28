@@ -85,7 +85,7 @@ public:
   std::vector<std::pair<std::string, int>> payout;   // seeds earned on the last field, line by line
   double modeTimer = 0;
 
-  void init(bool golden);
+  void init(bool golden, bool survivor);
   void newGame();                      // classic: three balls, high score
   void newRun();                       // Harvest: pick a seed pack (or start at once when only one is unlocked)
   void startRun(int pack);
